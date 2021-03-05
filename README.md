@@ -8,8 +8,8 @@ information about generating tuplets:
 https://github.com/Juuliuus/juusprime
 
 New as of 5 March 2021 (v1.0.1):
-- Added flags for automation for shell scripts, etc.
-Use <app> automate --help for that list.
+- Added flags for automation for shell scripts, etc.<br>
+Use "juusprime_app automate --help" for that list.
 
 This is an interactive terminal application interface to that package
 and is written to make prime "Tuplet" (sextuplets and/or quintuplets
