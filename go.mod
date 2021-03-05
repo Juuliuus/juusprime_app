@@ -4,5 +4,5 @@ go 1.15
 
 require (
 	github.com/Juuliuus/juusmenu v1.0.0
-	github.com/Juuliuus/juusprime v1.0.0
+	github.com/Juuliuus/juusprime v1.0.1
 )

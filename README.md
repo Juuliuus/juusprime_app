@@ -1,11 +1,15 @@
 
 ## juusprime_app : Generate prime Sextuplets / Tuplets, interactive linux terminal application ##
 
-February 2021:
+March 2021:
 
 juusprime_app uses the juusprime go package. See that page for more
 information about generating tuplets:
 https://github.com/Juuliuus/juusprime
+
+New as of 5 March 2021 (v1.0.1):
+- Added flags for automation for shell scripts, etc.
+Use <app> automate --help for that list.
 
 This is an interactive terminal application interface to that package
 and is written to make prime "Tuplet" (sextuplets and/or quintuplets
@@ -135,5 +139,9 @@ which is also written in pure go.
 -------------------------------------------------------------------------------
 
 ### History ###
+
+v1.0.1 March 5 2021
+- Added flags for automation for shell scripts, etc.
+Use <app> automate --help for that list.
 
 v1.0.0 February 2021

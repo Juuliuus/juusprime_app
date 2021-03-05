@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/big"
 	"os"
+	"strings"
 
 	jm "github.com/Juuliuus/juusmenu"
 	jup "github.com/Juuliuus/juusprime"
@@ -28,20 +29,23 @@ const (
 	muMymenuGen
 )
 
-var exitImmediately *bool
+var askExit bool = true
 
 func main() {
 
-	setFlags()
+	if x := handleFlags(); x > -1 {
+		os.Exit(x)
+	}
+
 	if !jup.IsConfigured() {
 		jup.Configure()
 	}
 	initMenus()
 
-	switch *exitImmediately {
-	case true:
-		menuMain.Start() //kill phrase exits immediately
+	switch askExit {
 	case false:
+		menuMain.Start() //kill phrase exits immediately
+	case true:
 		runMenus() //has confirmation on Kill Phrase use
 	}
 }
@@ -133,14 +137,13 @@ func buildMenu(menu *jm.Menu) {
 				input       string
 				wasCanceled bool
 			)
-			i := big.NewInt(0)
 			end := big.NewInt(0)
 			tNum := big.NewInt(0)
 			if input, wasCanceled = jup.GetUserInputInteger("Enter TNumber:", "1", "x"); wasCanceled {
 				return
 			}
 			fmt.Sscan(input, tNum)
-			i = jup.TNumToInt(tNum)
+			i := jup.TNumToInt(tNum)
 			big29 := big.NewInt(29)
 			end.Add(i, big29)
 
@@ -299,9 +302,76 @@ func runMenus() {
 	}
 }
 
-func setFlags() {
-	exitImmediately = flag.Bool("x", true, "if true (default) menu kill phrase exits menu system without confirmation")
-	flag.Parse()
+func handleFlags() (exitcode int) {
+
+	if len(os.Args) > 1 {
+
+		const overwrites = "Be aware automation overwrites output files, if they exist, automatically."
+
+		switch strings.ToUpper(os.Args[1]) {
+		case "--HELP", "-H", "HELP":
+			fmt.Println("")
+			fmt.Println("For automation flags help use `juusprime_app automate --help`")
+			fmt.Println(overwrites)
+			fmt.Println("")
+			//don't return from here this is the only way, it seems, to intercept help messages.
+		case "--VERSION", "-V", "VERSION":
+			fmt.Println("")
+			fmt.Println("juusprime-app, Version 1.0.1, March 2021")
+			fmt.Println("https://github.com/Juuliuus/juusprime")
+			fmt.Println("https://github.com/Juuliuus/juusprime_app")
+			fmt.Println("")
+			return 0
+		case "AUTOMATE":
+			if len(os.Args) > 2 {
+				switch strings.ToUpper(os.Args[2]) {
+				case "--HELP", "-H", "HELP":
+					fmt.Println("")
+					fmt.Println("automate subcommand")
+					fmt.Println(overwrites)
+					fmt.Println("")
+				}
+			}
+		}
+
+		flag.BoolVar(&askExit, "x", false, "if false (default) menu kill phrase exits menu system without confirmation")
+
+		automateCmd := flag.NewFlagSet("automate", flag.ExitOnError)
+
+		basisFilePtr := automateCmd.String("bf", "", "Path to 29basis file")
+		outputPathPtr := automateCmd.String("out", "", "Path to output folder")
+		fromBasisNumPtr := automateCmd.String("bfrom", "0", "from Basis Number (0 based)")
+		toBasisNumPtr := automateCmd.String("bto", "0", "to Basis Number")
+		//overwritePtr := automateCmd.Bool("ask", false, "if false [default] asks whether to overwrite output files")
+		filterPtr := automateCmd.Int("filter", 1, "Filter by 0-5 (none,6,L5,R5,L5R5,Q)\ndefault is 1 (sextuplets)")
+
+		flag.Parse()
+
+		switch os.Args[1] {
+
+		//For every subcommand, we parse its own flags and have access to trailing positional arguments.
+
+		case "automate":
+			automateCmd.Parse(os.Args[2:])
+			fmt.Println("subcommand 'automate'")
+
+			auto := jup.GetNewAutomationStructure()
+			auto.BasisFile = *basisFilePtr
+			auto.OutputPath = *outputPathPtr
+			auto.FromBasisNum = *fromBasisNumPtr
+			auto.ToBasisNum = *toBasisNumPtr
+			//auto.Overwrite = *overwritePtr
+			auto.Filter = *filterPtr
+			exitCode := jup.GeneratePrimeTupletsAutomated(auto)
+
+			fmt.Println("Finished.")
+			return exitCode
+		}
+
+	}
+
+	return -1
+
 }
 
 func printLTE29s(p *jup.PrimeLTE29) {
