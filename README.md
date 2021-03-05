@@ -141,7 +141,7 @@ which is also written in pure go.
 ### History ###
 
 v1.0.1 March 5 2021
-- Added flags for automation for shell scripts, etc.
-Use <app> automate --help for that list.
+- Added flags for automation for shell scripts, etc.<br>
+Use "juusprime_app automate --help" for that list.
 
 v1.0.0 February 2021
