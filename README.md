@@ -140,6 +140,10 @@ which is also written in pure go.
 
 ### History ###
 
+Not compiled
+- fix scanning issue for wanted effect in Human Readable option where
+  choice was ignored.
+
 v1.0.1 March 5 2021
 - Added flags for automation for shell scripts, etc.<br>
 Use "juusprime_app automate --help" for that list.

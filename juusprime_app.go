@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/big"
 	"os"
+	"strconv"
 	"strings"
 
 	jm "github.com/Juuliuus/juusmenu"
@@ -29,7 +30,7 @@ const (
 	muMymenuGen
 )
 
-var askExit bool = true
+var askExit bool
 
 func main() {
 
@@ -184,7 +185,7 @@ func buildMenu(menu *jm.Menu) {
 			if input, wasCanceled = jup.GetUserInputInteger("Enter Effect ID [0, 1, 2, or 3]:", "0", "x"); wasCanceled {
 				return
 			}
-			fmt.Sscan(input, effect)
+			effect, _ = strconv.Atoi(input)
 			jup.HumanReadable(tNum, &effect, &str1, &str2, os.Stdout)
 		})
 	case muMymenu31:
