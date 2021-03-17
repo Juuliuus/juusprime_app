@@ -19,6 +19,8 @@ var (
 	menu31        *jm.Menu
 	menuCalcs     *jm.Menu
 	menuGen       *jm.Menu
+	input         string
+	wasCanceled   bool
 )
 
 const (
@@ -92,101 +94,107 @@ func buildMenu(menu *jm.Menu) {
 	case muMymenuCalcs:
 		menu.SetMenuBreakItem("b", "Back", func() {})
 		menu.AddMenuEntry("tb", "TNumber to basis number (Tnum 1 based, basis 0 based)", func() {
-			var (
-				input       string
-				wasCanceled bool
-			)
 			basis := big.NewInt(0)
 			tNum := big.NewInt(0)
-			if input, wasCanceled = jup.GetUserInputInteger("Enter From TNumber:", "28", "x"); wasCanceled {
+			if input, wasCanceled = jup.GetUserInput("Enter TNumber(s) comma separated:", "28,1000000,1000000000000", "x"); wasCanceled {
 				return
 			}
-			fmt.Sscan(input, tNum)
-			jup.TNumToBasisNum(tNum, basis)
-			fmt.Println(basis)
+			sl := strings.Split(input, ",")
+
+			for i := range sl {
+				fmt.Sscan(sl[i], tNum)
+				jup.TNumToBasisNum(tNum, basis)
+				fmt.Println(fmt.Sprintf("TNumber %v is in basis-%v", tNum, basis))
+				fmt.Println("")
+			}
 		})
 		menu.AddMenuEntry("bt", "Basis number to from/to TNumber (Tnum 1 based, basis 0 based)", func() {
-			var (
-				input       string
-				wasCanceled bool
-			)
 			basis := big.NewInt(0)
 			fromNum := big.NewInt(0)
 			toNum := big.NewInt(0)
-			if input, wasCanceled = jup.GetUserInputInteger("Enter Basis Number:", "0", "x"); wasCanceled {
+			if input, wasCanceled = jup.GetUserInput("Enter Basis Numbers comma separated:", "0,1,1000000", "x"); wasCanceled {
 				return
 			}
-			fmt.Sscan(input, basis)
-			jup.BasisToTNumRange(basis, fromNum, toNum)
-			fmt.Println(fromNum, " : ", toNum)
+			sl := strings.Split(input, ",")
+
+			for i := range sl {
+				fmt.Sscan(sl[i], basis)
+				jup.BasisToTNumRange(basis, fromNum, toNum)
+				fmt.Println("basis", basis, ":", fromNum, "-", toNum)
+				fmt.Println("")
+			}
 		})
 		menu.AddMenuEntry("it", "Integer to TNumber", func() {
-			var (
-				input       string
-				wasCanceled bool
-			)
-			i := big.NewInt(0)
-			if input, wasCanceled = jup.GetUserInputInteger("Enter Integer:", "25", "x"); wasCanceled {
+			I := big.NewInt(0)
+			if input, wasCanceled = jup.GetUserInput("Enter Integers comma separated:", "25,101,1000000", "x"); wasCanceled {
 				return
 			}
-			fmt.Sscan(input, i)
-			tNum := jup.IntToTNum(i)
-			fmt.Println(fmt.Sprintf("Integer %v is in TNumber %v", i, tNum))
+			sl := strings.Split(input, ",")
+
+			for i := range sl {
+				fmt.Sscan(sl[i], I)
+				tNum := jup.IntToTNum(I)
+				fmt.Println(fmt.Sprintf("Integer %v is in TNumber %v", I, tNum))
+				fmt.Println("")
+			}
 		})
 		menu.AddMenuEntry("ti", "TNumber to Integer, and its range", func() {
-			var (
-				input       string
-				wasCanceled bool
-			)
 			end := big.NewInt(0)
 			tNum := big.NewInt(0)
-			if input, wasCanceled = jup.GetUserInputInteger("Enter TNumber:", "1", "x"); wasCanceled {
+			if input, wasCanceled = jup.GetUserInput("Enter TNumbers comma separated:", "94090, 946644", "x"); wasCanceled {
 				return
 			}
-			fmt.Sscan(input, tNum)
-			i := jup.TNumToInt(tNum)
-			big29 := big.NewInt(29)
-			end.Add(i, big29)
+			sl := strings.Split(input, ",")
 
-			fmt.Println(fmt.Sprintf("TNumber %v starts at Integer %v, and ends at %v", tNum, i, end))
+			big29 := big.NewInt(29)
+
+			for i := range sl {
+				fmt.Sscan(sl[i], tNum)
+				I := jup.TNumToInt(tNum)
+				end.Add(I, big29)
+				fmt.Println(fmt.Sprintf("TNumber %v starts at Integer %v, and ends at %v", tNum, I, end))
+				fmt.Println("")
+			}
 		})
 		menu.AddMenuEntry("N", "Get N from a TNumber", func() {
-			var (
-				input       string
-				wasCanceled bool
-			)
 			n := big.NewInt(0)
-			//fromNum := big.NewInt(0)
 			tNum := big.NewInt(0)
-			if input, wasCanceled = jup.GetUserInputInteger("Enter TNumber Number:", "28", "x"); wasCanceled {
+			if input, wasCanceled = jup.GetUserInput("Enter TNumbers comma separated:", "94090, 946644", "x"); wasCanceled {
 				return
 			}
-			fmt.Sscan(input, tNum)
-			p31 := jup.NewPrimeGTE31(big.NewInt(31))
-			_ = p31
+			sl := strings.Split(input, ",")
 
-			jup.GetNfromTNum(tNum, p31, n)
-			fmt.Println(fmt.Sprintf("TNum: %v, n: %v", tNum, n))
+			p31 := jup.NewPrimeGTE31(big.NewInt(31))
+
+			for i := range sl {
+				fmt.Sscan(sl[i], tNum)
+				jup.GetNfromTNum(tNum, p31, n)
+				fmt.Println(fmt.Sprintf("TNum: %v, n: %v", tNum, n))
+				fmt.Println("")
+			}
+
 		})
 		menu.AddMenuEntry("H", "Human Readable from raw data (Give a TNum and Effect ID [0, 1, 2, or 3])", func() {
-			var (
-				input       string
-				wasCanceled bool
-			)
 			tNum := big.NewInt(0)
 			effect := 0
 			str1, str2 := "n/a", "n/a"
 
-			if input, wasCanceled = jup.GetUserInputInteger("Enter TNumber Number:", "28", "x"); wasCanceled {
+			if input, wasCanceled = jup.GetUserInput("Enter TNumbers comma separated:", "94090, 94664", "x"); wasCanceled {
 				return
 			}
-			fmt.Sscan(input, tNum)
+			sl := strings.Split(input, ",")
 
 			if input, wasCanceled = jup.GetUserInputInteger("Enter Effect ID [0, 1, 2, or 3]:", "0", "x"); wasCanceled {
 				return
 			}
 			effect, _ = strconv.Atoi(input)
-			jup.HumanReadable(tNum, &effect, &str1, &str2, os.Stdout)
+
+			for i := range sl {
+				fmt.Sscan(sl[i], tNum)
+				jup.HumanReadable(tNum, &effect, &str1, &str2, os.Stdout)
+				fmt.Println("")
+			}
+
 		})
 	case muMymenu31:
 		menu.SetMenuBreakItem("b", "Back", func() {})

@@ -7,9 +7,14 @@ juusprime_app uses the juusprime go package. See that page for more
 information about generating tuplets:
 https://github.com/Juuliuus/juusprime
 
-New as of 5 March 2021 (v1.0.1):
-- Added flags for automation for shell scripts, etc.<br>
-Use "juusprime_app automate --help" for that list.
+New as of 17 March 2021 (v1.1.0):
+- improved offset algorithm has increased Tuplet generation speed by
+  about 30%
+- bug fix scanning issue for wanted effect in Human Readable option where
+  choice was ignored.
+- calc menu items now allow comma separated lists of input.  
+
+See at bottom for other recent additions
 
 This is an interactive terminal application interface to that package
 and is written to make prime "Tuplet" (sextuplets and/or quintuplets
@@ -42,6 +47,18 @@ stored.
 Once that is finished you will be at the Main menu. As in the
 screenshot above choose "1" at the main menu. This will open the
 Generation menu.
+
+
+* Automation:
+
+New automation flags, Use "juusprime_app automate --help" to see all
+Options. Example:
+
+juusprime_app  automate -bf=/mypath/my29basis -out=./ -bfrom=0 -bto=1
+-filter=1
+
+File paths relative to application path are ok too.
+
 
 
 * Generate 29Basis:
@@ -140,9 +157,13 @@ which is also written in pure go.
 
 ### History ###
 
-Not compiled
-- fix scanning issue for wanted effect in Human Readable option where
+v1.1.0 March 17 2021
+- improved offset algorithm has increased Tuplet generation speed by
+  about 30%
+- bug fix scanning issue for wanted effect in Human Readable option where
   choice was ignored.
+- calc menu items now allow comma separated lists of input.  
+
 
 v1.0.1 March 5 2021
 - Added flags for automation for shell scripts, etc.<br>
