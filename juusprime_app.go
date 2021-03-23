@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"math/big"
@@ -51,6 +52,13 @@ func main() {
 	case true:
 		runMenus() //has confirmation on Kill Phrase use
 	}
+}
+
+func waitForInput() {
+	fmt.Println("Press <RET> to continue...")
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+	scanner.Text()
 }
 
 func buildMenu(menu *jm.Menu) {
@@ -156,7 +164,7 @@ func buildMenu(menu *jm.Menu) {
 				fmt.Println("")
 			}
 		})
-		menu.AddMenuEntry("N", "Get N from a TNumber", func() {
+		menu.AddMenuEntry("N", "Get maxN (based on pP31) from a TNumber", func() {
 			n := big.NewInt(0)
 			tNum := big.NewInt(0)
 			if input, wasCanceled = jup.GetUserInput("Enter TNumbers comma separated:", "94090, 946644", "x"); wasCanceled {
@@ -174,7 +182,26 @@ func buildMenu(menu *jm.Menu) {
 			}
 
 		})
-		menu.AddMenuEntry("H", "Human Readable from raw data (Give a TNum and Effect ID [0, 1, 2, or 3])", func() {
+		menu.AddMenuEntry("HH", "Human Readable (Give a single TNum and Effect ID [0, 1, 2, or 3])", func() {
+			tNum := big.NewInt(0)
+			effect := 0
+			str1, str2 := "n/a", "n/a"
+
+			if input, wasCanceled = jup.GetUserInputInteger("Enter TNumber:", "94090", "x"); wasCanceled {
+				return
+			}
+			fmt.Sscan(input, tNum)
+
+			if input, wasCanceled = jup.GetUserInputInteger("Enter Effect ID [0, 1, 2, or 3]:", "0", "x"); wasCanceled {
+				return
+			}
+			effect, _ = strconv.Atoi(input)
+
+			jup.HumanReadable(tNum, &effect, &str1, &str2, os.Stdout)
+			fmt.Println("")
+
+		})
+		menu.AddMenuEntry("H", "Human Readable list of Tnums (analyzed for all Tuplet types automatically)", func() {
 			tNum := big.NewInt(0)
 			effect := 0
 			str1, str2 := "n/a", "n/a"
@@ -184,18 +211,31 @@ func buildMenu(menu *jm.Menu) {
 			}
 			sl := strings.Split(input, ",")
 
-			if input, wasCanceled = jup.GetUserInputInteger("Enter Effect ID [0, 1, 2, or 3]:", "0", "x"); wasCanceled {
-				return
-			}
-			effect, _ = strconv.Atoi(input)
-
 			for i := range sl {
 				fmt.Sscan(sl[i], tNum)
-				jup.HumanReadable(tNum, &effect, &str1, &str2, os.Stdout)
+				for j := 0; j < 4; j++ {
+					effect = j
+
+					fmt.Println("===================")
+					switch effect {
+					case 0:
+						fmt.Println(fmt.Sprintf(">> As Sextuplet (%v)", j))
+					case 1:
+						fmt.Println(fmt.Sprintf(">> As left-sided Quintuplet (%v)", j))
+					case 2:
+						fmt.Println(fmt.Sprintf(">> As right-sided Quintuplet (%v)", j))
+					default:
+						fmt.Println(fmt.Sprintf(">> As Quadruplet (%v)", j))
+					}
+					fmt.Println("===================")
+
+					jup.HumanReadable(tNum, &effect, &str1, &str2, os.Stdout)
+					waitForInput()
+				}
 				fmt.Println("")
 			}
-
 		})
+
 	case muMymenu31:
 		menu.SetMenuBreakItem("b", "Back", func() {})
 		menu.AddMenuEntry("31", "Details", func() {
