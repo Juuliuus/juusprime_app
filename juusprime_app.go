@@ -13,15 +13,29 @@ import (
 	jup "github.com/Juuliuus/juusprime"
 )
 
+func init() {
+	p31 = jup.NewPrimeGTE31(big.NewInt(31))
+	p37 = jup.NewPrimeGTE31(big.NewInt(37))
+	p41 = jup.NewPrimeGTE31(big.NewInt(41))
+	p43 = jup.NewPrimeGTE31(big.NewInt(43))
+	p47 = jup.NewPrimeGTE31(big.NewInt(47))
+	p49 = jup.NewPrimeGTE31(big.NewInt(49))
+	p53 = jup.NewPrimeGTE31(big.NewInt(53))
+	p59 = jup.NewPrimeGTE31(big.NewInt(59))
+	primes = []*jup.PrimeGTE31{p31, p37, p41, p43, p47, p49, p53, p59}
+}
+
 var (
-	menuMain      *jm.Menu
-	menu29        *jm.Menu
-	menu29Details *jm.Menu
-	menu31        *jm.Menu
-	menuCalcs     *jm.Menu
-	menuGen       *jm.Menu
-	input         string
-	wasCanceled   bool
+	menuMain                               *jm.Menu
+	menu29                                 *jm.Menu
+	menu29Details                          *jm.Menu
+	menu31                                 *jm.Menu
+	menuCalcs                              *jm.Menu
+	menuGen                                *jm.Menu
+	input                                  string
+	wasCanceled                            bool
+	p31, p37, p41, p43, p47, p49, p53, p59 *jup.PrimeGTE31
+	primes                                 []*jup.PrimeGTE31
 )
 
 const (
@@ -164,24 +178,36 @@ func buildMenu(menu *jm.Menu) {
 				fmt.Println("")
 			}
 		})
-		menu.AddMenuEntry("N", "Get maxN (based on pP31) from a TNumber", func() {
+
+		menu.AddMenuEntry("N", "Get N's from a TNumber", func() {
 			n := big.NewInt(0)
+			big32 := big.NewInt(32)
 			tNum := big.NewInt(0)
-			if input, wasCanceled = jup.GetUserInput("Enter TNumbers comma separated:", "94090, 946644", "x"); wasCanceled {
+			if input, wasCanceled = jup.GetUserInput("Enter TNumber Number(s) comma separated:", "94090, 946644", "x"); wasCanceled {
 				return
 			}
 			sl := strings.Split(input, ",")
 
-			p31 := jup.NewPrimeGTE31(big.NewInt(31))
-
 			for i := range sl {
 				fmt.Sscan(sl[i], tNum)
-				jup.GetNfromTNum(tNum, p31, n)
-				fmt.Println(fmt.Sprintf("TNum: %v, n: %v", tNum, n))
+				if tNum.Cmp(big32) == -1 {
+					fmt.Println(fmt.Sprintf("TNumber %v is less than %v, invalid for potPrimes, skipping.. ", tNum, big32))
+					continue
+				}
+				fmt.Println(fmt.Sprintf("TNumber %v:", tNum))
+				for j := range primes {
+					switch tNum.Cmp(primes[j].Prime.StartTemplateNum()) == -1 {
+					case true:
+						n.SetInt64(-1)
+					default:
+						jup.GetNfromTNum(tNum, primes[j], n)
+					}
+					fmt.Println(fmt.Sprintf("%v: %v", primes[j].Prime.Value(), n))
+				}
 				fmt.Println("")
 			}
-
 		})
+
 		menu.AddMenuEntry("HH", "Human Readable (Give a single TNum and Effect ID [0, 1, 2, or 3])", func() {
 			tNum := big.NewInt(0)
 			effect := 0
